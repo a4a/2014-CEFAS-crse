@@ -20,7 +20,7 @@
 \fontfamily{verdana}\selectfont
 
 %************ Title & Author ***********************
-\title[FLR in 10 slides]{FLR in 10 slides or less}
+\title[FLR in 15 slides]{FLR in 15 slides or less}
 \author{Ernesto Jardim\\Finlay Scott}
 \institute[JRC]{European Commission\\ Joint Research Centre \\ (JRC)}
 \date[SWWK]{08-10th March 2014}
@@ -31,7 +31,6 @@
 % some code we need 
 %===========================================
 <<echo=FALSE>>=
-# source("run.R")
 library(FLCore)
 data(ple4)
 @
@@ -39,16 +38,16 @@ data(ple4)
 %*******************************************
 \begin{frame}%[plain]
 \titlepage
-\begin{flushright}
-	\includegraphics[width=0.1\textwidth]{cc.png}
-\end{flushright}
+	\begin{flushright}
+		\includegraphics[width=0.1\textwidth]{cc.png}
+	\end{flushright}
 \end{frame}
 
 %*******************************************
-% \begin{frame}
-% \frametitle{Outline}
-% \tableofcontents
-% \end{frame}
+\begin{frame}
+\frametitle{Outline}
+\tableofcontents
+\end{frame}
 
 %===========================================
 % INTRODUCTION
@@ -57,40 +56,38 @@ data(ple4)
 %*******************************************
 \begin{frame}
    \frametitle{What is FLR ?}
-\begin{itemize}
-	\item FLR = Fisheries Libraries in R
-	\item FLR is a set of R packages
-	\item FLR is developed and maintained by a group of fisheries scientists
-	\item FLR is an opensource initiative
-\end{itemize}
-
+	\begin{itemize}
+		\item FLR = Fisheries Libraries in R
+		\item FLR is a set of R packages
+		\item FLR is developed and maintained by a group of fisheries scientists
+		\item FLR is an opensource initiative
+	\end{itemize}
 \end{frame}
 
 \begin{frame}
    \frametitle{A brief history.}
-\begin{itemize}
-	\item 2005 - 1.0 no one wants to remember this one ...
-	\item 2007 - 1.4 "The golden jackal"
-	\item 2009 - 2.2 "Swordfish Polka"
-	\item 2011 - 2.4 "The Duke of Prawns"
-	\item 2014? - 2.6 ??
-\end{itemize}
-
+	\begin{itemize}
+		\item 2005 - 1.0 no one wants to remember this one ...
+		\item 2007 - 1.4 "The golden jackal"
+		\item 2009 - 2.2 "Swordfish Polka"
+		\item 2011 - 2.4 "The Duke of Prawns"
+		\item 2014? - 2.6 ??
+	\end{itemize}
 \end{frame}
 
 %*******************************************
 \begin{frame}
    \frametitle{Packages}
-<<fig=TRUE, echo=FALSE>>=
-par(mai=c(0.2, 0.2, 0.5, 0.2), lwd=2)
-plot(seq(3, 13, len=2)~seq(1, 8, len=2), type="n", xlab="", ylab="", main="FLR packages development model", axes=FALSE)
-segments(2, 10, 7, 10, lwd=2, col="white")
-segments(2, 10, 2, 8, lwd=2, col="white")
-segments(7, 10, 7, 6, lwd=2, col="white")
-segments(4.5, 12, 4.5, 6, lwd=2, col="white")
-segments(3.8, 6, 5.2, 6, lwd=2, col="white")
-segments(3.8, 6, 3.8, 4, lwd=2, col="white")
-segments(5.2, 6, 5.2, 4, lwd=2, col="white")
+<<fig=TRUE, echo=FALSE, width=6, height=4>>=
+par(mai=c(0.1, 0.1, 0.1, 0.1), lwd=2)
+plot(seq(3, 13, len=2)~seq(1, 8, len=2), type="n", xlab="", ylab="", axes=FALSE)
+segments(2, 10, 7, 10, lwd=2)
+segments(2, 10, 2, 8, lwd=2)
+segments(7, 10, 7, 6, lwd=2)
+segments(4.5, 12, 4.5, 6, lwd=2)
+segments(3.8, 6, 5.2, 6, lwd=2)
+segments(3.8, 6, 3.8, 4, lwd=2)
+segments(5.2, 6, 5.2, 4, lwd=2)
 points(4.5, 12, pch=21, cex=12, bg="white")
 points(2, 8, pch=22, cex=12, bg="white")
 points(4.5, 8, pch=21, cex=12, bg="white")
@@ -120,24 +117,23 @@ Stands for "FL quantity" and it's the smallest component of FLR classes.\newline
 
 Six dimensional array used to store data of a particular type (e.g. catch numbers), with the following dimensions:\newline
 
-% Dimensions are:
-% \begin{enumerate}
-% 	\item User defined (age, length etc.)
-% 	\item Year
-% 	\item Unit (substocks, male/female)
-% 	\item Season
-% 	\item Area
-% 	\item Iter
-% \end{enumerate}
 {\scriptsize{
 <<results=verbatim,echo=FALSE>>=
 names(dimnames(FLQuant()))
 #FLQuant()
 @
 }}
-
-
 \end{frame}
+
+\begin{frame}[containsverbatim]
+  \frametitle{FLQuant visualization}
+	\begin{minipage}[c]{0.9\textwidth}
+		\begin{center}
+			\includegraphics[width=0.8\textwidth]{3d_array.png}
+		\end{center}
+	\end{minipage}
+\end{frame}
+
 
 %-------------------------------------------
 % FLStock
@@ -160,14 +156,13 @@ showClass("FLStock")
 \section{FLIndex}
 %***************************************
 \begin{frame}[containsverbatim]
-  \frametitle{FLIndex}
+	\frametitle{FLIndex}
 Represents a index (e.g. index of abundance from a survey)
 {\scriptsize{
 <<results=verbatim,echo=FALSE>>=
 showClass("FLIndex")
 @
 }}
-
 \end{frame}
 
 %-------------------------------------------
@@ -176,7 +171,7 @@ showClass("FLIndex")
 \section{FLSR}
 %***************************************
 \begin{frame}[containsverbatim]
-  \frametitle{FLSR}
+	\frametitle{FLSR}
 Represents a stock-recruitment relationship and allows the estimation of its parameters.
 {\scriptsize{
 <<results=verbatim,echo=FALSE>>=
@@ -185,87 +180,37 @@ showClass("FLSR")
 }}
 \end{frame}
 
-%-------------------------------------------
-% FLlst
-%-------------------------------------------
-\section{FLR Lists}
-%***************************************
-\begin{frame}[containsverbatim]
-  \frametitle{FLlist}
-A list of other classes
-{\scriptsize{
-<<results=verbatim,echo=FALSE>>=
-showClass("FLlst")
-@
-}}
-
-\end{frame}
-
-\section{Example}
-%***************************************
-\begin{frame}[containsverbatim]
-  \frametitle{Example I}
-<<results=verbatim, eval=FALSE>>=
-# load --------------------------------
-library(FLCore)
-data(ple4.index)
-data(ple4)
-# FLStock -----------------------------
-plot(ple4)
-summary(ple4)
-# FLQuant -----------------------------
-cth <- catch(ple4)
-plot(cth)
-summary(cth)
-@
-\end{frame}
-
-\begin{frame}[containsverbatim]
-  \frametitle{Example II}
-<<results=verbatim, eval=FALSE>>=
-# FLIndex -----------------------------
-plot(ple4.index)
-summary(ple4.index)
-# FLSR --------------------------------
-ple4.sr <- as.FLSR(ple4, model="bevholt")
-ple4.sr <- fmle(ple4.sr)
-plot(ple4.sr)
-# FLlst -------------------------------
-flqs <- FLQuants(c=catch(ple4), b=stock(ple4))
-xyplot(data~year, groups=qname, data=flqs, 
-	 type="l")
-@
-\end{frame}
-
 \section{OOP}
 %***************************************
 \begin{frame}
 	\frametitle{OOP}
-
 	\begin{itemize}
 		\item OOP = Object Oriented Programming
 		\item A programming language model organized around "objects" rather than "actions"
 		\item R implementation is called "S4"
 	\end{itemize}
-
 \end{frame}
 
 \begin{frame}
 	\frametitle{S4 (OOP in R)}
-
+	\begin{minipage}[c]{0.9\textwidth}
+		\begin{center}
+			\includegraphics[width=0.9\textwidth]{oop.png}
+		\end{center}
+	\end{minipage}
 \end{frame}
 
 \begin{frame}
 	\frametitle{FLR \& S4}
-	\begin{center}
-		\includegraphics[width=1\textwidth]{s4.png}
-	\end{center}
-
+	\begin{minipage}[c]{0.9\textwidth}
+		\begin{center}
+			\includegraphics[width=0.9\textwidth]{s4.png}
+		\end{center}
+	\end{minipage}
 \end{frame}
 
 \begin{frame}
 	\frametitle{FLR \& S4 tips}
-
 	\begin{itemize}
 		\item Constructors have the same name as the class.
 		\begin{itemize}
@@ -282,7 +227,6 @@ xyplot(data~year, groups=qname, data=flqs,
 			\item plot(), summary(), [, [<-
 		\end{itemize}
 	\end{itemize}
-
 \end{frame}
 
 \end{document}
