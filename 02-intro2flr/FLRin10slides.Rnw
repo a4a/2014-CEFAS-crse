@@ -2,24 +2,31 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 %\useoutertheme{infolines}
-\usetheme{Hannover}% other nice themes Hannover, CambridgeUS, AnnArbor, Madrid, PaloAlto, Malmoe, Rochester 
-\usecolortheme{beetle}% other options "dove"
-\usefonttheme{structuresmallcapsserif}
-\setbeamertemplate{items}[triangle] % other options "circle", "ball", "square"
+%\usetheme{Hannover}% other nice themes Hannover, CambridgeUS, AnnArbor, Madrid, PaloAlto, Malmoe, Rochester 
+%\usecolortheme{dove}% other options "dove", beetle
+%\usefonttheme{structuresmallcapsserif}
+%\setbeamertemplate{items}[triangle] % other options "circle", "ball", "square"
 %\setbeamertemplate{blocks}[rounded][shadow=true]
 %\setbeamertemplate{navigation symbols}{}
 %\useoutertheme[height=20pt]{sidebar}
-% NOTE: this theme inverts colors, if one wants to use common colors it's necessary
+% NOTE: this theme inverts colors, if one wants to use common colors it"s necessary
 % to comment the code on the chunk about lattice settings  
-\setbeamercolor{normal text}{fg=white,bg=black}% inverted black background white foreground
-\setbeamercolor*{palette sidebar secondary}{fg=white}
+%\setbeamercolor{normal text}{fg=white,bg=black}% inverted black background white foreground
+%\setbeamercolor*{palette sidebar secondary}{fg=white}
+
+\include{eu-beamer-template}    % THIS is the line that includes the EU template!
+\usepackage{arev,t1enc}
+\usepackage[T1]{fontenc}
+\fontfamily{verdana}\selectfont
 
 %************ Title & Author ***********************
 \title[FLR in 10 slides]{FLR in 10 slides or less}
-\author{Ernesto Jardim}
+\author{Ernesto Jardim\\Finlay Scott}
+\institute[JRC]{European Commission\\ Joint Research Centre \\ (JRC)}
+\date[SWWK]{08-10th March 2014}
 
 \begin{document}
-\SweaveOpts{concordance=TRUE}
+
 %===========================================
 % some code we need 
 %===========================================
@@ -54,6 +61,19 @@ data(ple4)
 	\item FLR = Fisheries Libraries in R
 	\item FLR is a set of R packages
 	\item FLR is developed and maintained by a group of fisheries scientists
+	\item FLR is an opensource initiative
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+   \frametitle{A brief history.}
+\begin{itemize}
+	\item 2005 - 1.0 no one wants to remember this one ...
+	\item 2007 - 1.4 "The golden jackal"
+	\item 2009 - 2.2 "Swordfish Polka"
+	\item 2011 - 2.4 "The Duke of Prawns"
+	\item 2014? - 2.6 ??
 \end{itemize}
 
 \end{frame}
@@ -63,7 +83,7 @@ data(ple4)
    \frametitle{Packages}
 <<fig=TRUE, echo=FALSE>>=
 par(mai=c(0.2, 0.2, 0.5, 0.2), lwd=2)
-plot(seq(3, 13, len=2)~seq(1, 8, len=2), type="n", xlab="", ylab="", main="FLR packages' development model", axes=FALSE)
+plot(seq(3, 13, len=2)~seq(1, 8, len=2), type="n", xlab="", ylab="", main="FLR packages development model", axes=FALSE)
 segments(2, 10, 7, 10, lwd=2, col="white")
 segments(2, 10, 2, 8, lwd=2, col="white")
 segments(7, 10, 7, 6, lwd=2, col="white")
@@ -128,9 +148,9 @@ names(dimnames(FLQuant()))
   \frametitle{FLStock}
 Represents a fish stock and comprises a number of slots.
 {\scriptsize{
-<<results=verbatim,echo=TRUE>>=
+<<results=verbatim,echo=FALSE>>=
 showClass("FLStock")
-@ %def 
+@
 }}
 \end{frame}
 
@@ -143,9 +163,9 @@ showClass("FLStock")
   \frametitle{FLIndex}
 Represents a index (e.g. index of abundance from a survey)
 {\scriptsize{
-<<results=verbatim,echo=TRUE>>=
+<<results=verbatim,echo=FALSE>>=
 showClass("FLIndex")
-@ %def 
+@
 }}
 
 \end{frame}
@@ -159,9 +179,9 @@ showClass("FLIndex")
   \frametitle{FLSR}
 Represents a stock-recruitment relationship and allows the estimation of its parameters.
 {\scriptsize{
-<<results=verbatim,echo=TRUE>>=
+<<results=verbatim,echo=FALSE>>=
 showClass("FLSR")
-@ %def 
+@
 }}
 \end{frame}
 
@@ -174,9 +194,9 @@ showClass("FLSR")
   \frametitle{FLlist}
 A list of other classes
 {\scriptsize{
-<<results=verbatim,echo=TRUE>>=
+<<results=verbatim,echo=FALSE>>=
 showClass("FLlst")
-@ %def 
+@
 }}
 
 \end{frame}
@@ -202,7 +222,7 @@ summary(cth)
 
 \begin{frame}[containsverbatim]
   \frametitle{Example II}
-<<eval=FALSE>>=
+<<results=verbatim, eval=FALSE>>=
 # FLIndex -----------------------------
 plot(ple4.index)
 summary(ple4.index)
@@ -220,51 +240,48 @@ xyplot(data~year, groups=qname, data=flqs,
 \section{OOP}
 %***************************************
 \begin{frame}
-  \frametitle{OOP}
+	\frametitle{OOP}
 
-\begin{itemize}
-	\item OOP = Object Oriented Programming
-	\item A programming language model organized around 'objects' rather than 'actions'
-	\item R implementation is called 'S4'
-\end{itemize}
+	\begin{itemize}
+		\item OOP = Object Oriented Programming
+		\item A programming language model organized around "objects" rather than "actions"
+		\item R implementation is called "S4"
+	\end{itemize}
 
 \end{frame}
 
 \begin{frame}
-  \frametitle{S4 (OOP in R)}
-
-
-\end{frame}
-
-\begin{frame}
-  \frametitle{FLR \& S4}
-
-\begin{center}
-	\includegraphics[width=0.5\textwidth]{s4.png}
-\end{center}
-
+	\frametitle{S4 (OOP in R)}
 
 \end{frame}
 
 \begin{frame}
-  \frametitle{FLR \& S4 tips}
+	\frametitle{FLR \& S4}
+	\begin{center}
+		\includegraphics[width=1\textwidth]{s4.png}
+	\end{center}
 
-\begin{itemize}
-	\item Constructors have the same name as the class.
+\end{frame}
+
+\begin{frame}
+	\frametitle{FLR \& S4 tips}
+
 	\begin{itemize}
-		\item FLStock() creates an object of the class “FLStock”
-		\item FLIndex() creates an object of the class “FLIndex”
+		\item Constructors have the same name as the class.
+		\begin{itemize}
+			\item FLStock() creates an object of the class "FLStock"
+			\item FLIndex() creates an object of the class "FLIndex"
+		\end{itemize}
+		\item Accessors have the same name as the slot.
+		\begin{itemize}
+			\item catch.n() extracts the slot "catch.n" from an object "FLStock"
+			\item index() extracts the slot "index" from an object "FLIndex"
+		\end{itemize}
+		\item Most classes have a set of basic methods
+		\begin{itemize}
+			\item plot(), summary(), [, [<-
+		\end{itemize}
 	\end{itemize}
-	\item Accessors have the same name as the slot.
-	\begin{itemize}
-		\item catch.n() extracts the slot “catch.n” from an object “FLStock”
-		\item index() extracts the slot “index” from an object “FLIndex”
-	\end{itemize}
-	\item Most classes have a set of basic methods
-	\begin{itemize}
-		\item plot(), summary(), [, [<-
-	\end{itemize}
-\end{itemize}
 
 \end{frame}
 
