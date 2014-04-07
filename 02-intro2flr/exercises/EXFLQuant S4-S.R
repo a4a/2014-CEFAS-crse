@@ -1,14 +1,18 @@
+#####################################################################
 # EX FLQuant S4.R - DESC
 # EX FLQuant S4.R
 
 # Copyright 2003-2013 FLR Team. Distributed under the GPL 2 or later
 # Maintainer: Iago Mosqueira, JRC
 # $Id: $
+#####################################################################
 
 
 library(FLCore)
 
+#====================================================================
 # CREATE
+#====================================================================
 
 # (1) Create an FLQuant object with elements numbered sequentially (i.e. 1 to N)
 # and with ages from 1 to 6, years from 2003 to 2012 and four seasons
@@ -21,7 +25,9 @@ flq <- FLQuant(1:240, dim=c(6,10,1,4,1,1),
 
 flq <- FLQuant(rlnorm(6000), dimnames=list(age=1:6, year=2003:2012, iter=1:100))
 
+#====================================================================
 # SUBSET
+#====================================================================
 
 # (3) Extract from flq the values for the first three years
 
@@ -37,14 +43,11 @@ fle4 <- flq[-6,]
 
 fle5 <- flq[-dims(flq)$max, ]
 
-# APPLY
-
-# Calculate the proportion-at-age per year
-
+#====================================================================
 # COMPUTE
+#====================================================================
 
 flq <- FLQuant(rnorm(200), dimnames=list(age=1:5, year=2000:2013, area=c("N","S","C")))
-
 
 # How many values in flq are greater than 0?
 
@@ -52,9 +55,27 @@ flq > 0
 
 sum(flq > 0)
 
-# TRANSFORM
+flq*2
 
+flq/var(flq)
+
+
+#====================================================================
+# APPLY
+#====================================================================
+
+# Compute the proportion-at-age per year
+
+
+#====================================================================
+# TRANSFORM
+#====================================================================
+
+??? apply(is.na(flq), 1:6, as.numeric)
+
+#====================================================================
 # PROGRAMMING
+#====================================================================
 
 # Let's try programmoing a very simple population model
 

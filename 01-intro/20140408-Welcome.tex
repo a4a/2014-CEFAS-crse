@@ -1,0 +1,121 @@
+\documentclass{beamer}% usefull options [handout]
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+%\useoutertheme{infolines}
+%\usetheme{Hannover}% other nice themes Hannover, CambridgeUS, AnnArbor, Madrid, PaloAlto, Malmoe, Rochester 
+%\usecolortheme{dove}% other options "dove", beetle
+%\usefonttheme{structuresmallcapsserif}
+%\setbeamertemplate{items}[triangle] % other options "circle", "ball", "square"
+%\setbeamertemplate{blocks}[rounded][shadow=true]
+%\setbeamertemplate{navigation symbols}{}
+%\useoutertheme[height=20pt]{sidebar}
+% NOTE: this theme inverts colors, if one wants to use common colors it"s necessary
+% to comment the code on the chunk about lattice settings  
+%\setbeamercolor{normal text}{fg=white,bg=black}% inverted black background white foreground
+%\setbeamercolor*{palette sidebar secondary}{fg=white}
+
+\include{eu-beamer-template}    % THIS is the line that includes the EU template!
+\usepackage{arev,t1enc}
+\usepackage[T1]{fontenc}
+\fontfamily{verdana}\selectfont
+
+%************ Title & Author ***********************
+\title[a4a \& FLR]{a4a \& FLR course \\ 20140408-10@CEFAS}
+\author{Ernesto Jardim\\Finlay Scott}
+\institute[JRC]{European Commission\\ Joint Research Centre \\ (JRC)}
+\date[SWWK]{08-10th March 2014}
+
+\begin{document}
+
+%*******************************************
+\begin{frame}%[plain]
+\titlepage
+	\begin{flushright}
+		\includegraphics[width=0.1\textwidth]{cc.png}
+	\end{flushright}
+\end{frame}
+
+\begin{frame}
+   \frametitle{Welcome}
+	\begin{itemize}
+		\item Thanks to CEFAS and Jos\'e for the invitation
+		\item First full course on a4a methods
+		\item The contents are flexible
+		\item The course material is a mix of presentations and code
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+   \frametitle{Logistics}
+	\begin{itemize}
+		\item Use git for file distribution
+		\item FLa4a 0.82.0 runs on top of FLCore 2.5.x
+		\begin{itemize}
+			\item It's a beta version
+			\item There maybe bugs
+			\item Man pages are not finalized
+			\item We're looking forward to see how things workout during the course to release version 1.0
+		\end{itemize}
+		\item RStudio is recommended
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+   \frametitle{Agenda - Day 01}
+	\begin{itemize}
+		\item Day 01
+		\begin{itemize}
+			\item Welcome
+			\item Intro to FLR
+			\item FLR hands-on
+			\item Intro to the a4a Initiative
+			\item a4a Growth methods
+			\item converting length to ages
+			\item a4a M methods
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+   \frametitle{Agenda - Day 02}
+	\begin{itemize}
+	 	\item Day 02
+	 	\begin{itemize}
+		 	\item Stock assessment with a4a
+		 	\item Quick and dirty
+		 	\item Data structures
+		 	\item The sca method - statistical catch-at-age
+		 	\item The a4aSCA method - advanced features
+		 	\item Predict and simulate
+		 \end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+   \frametitle{Agenda - Day 03}
+	\begin{itemize}
+		 \item Day 03
+		 \begin{itemize}
+			 \item Projections with FLash
+			 \item Biologic Reference points with FLBRP
+			 \item MSE (???)
+			 \item Open slot (???)
+		 \end{itemize}:
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+   \frametitle{Important links}
+	\begin{itemize}
+		 \item \href{http://flr-project.org}{FLR}
+		 \item \href{http://r-project.org}{R}
+		 \item \href{https://www.rstudio.com/}{RStudio}
+		 \item \href{https://fishreg.jrc.ec.europa.eu/web/a4a}{a4a}
+		 \item \href{https://github.com/a4a/2014-CEFAS-crse}{git repository for the course}
+	\end{itemize}
+\end{frame}
+
+
+\end{document}
+
