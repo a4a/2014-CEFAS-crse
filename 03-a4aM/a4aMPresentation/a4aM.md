@@ -12,7 +12,7 @@ See Kenchington, 2013, Fish and Fsheries (29 estimators of m). e.g.
 
 Jensen's second estimator: m = 1.5 K
 
-Jensen's third estimator: m = k^0.66 * t^0.57
+Gislason's first estimator: m = 1.73 l^(-1.61) linf^1.44 K
 
 
 
@@ -20,11 +20,11 @@ Jensen's third estimator: m = k^0.66 * t^0.57
 
 Three components:
 
-* shape (formula - age effect) 
-* level (formula - year effect)
-* trend (formula - time trend)
+* shape (age / length effect) 
+* level 
+* trend (time trend)
 
-The 'm' method multiplies components to give m-at-age
+The `m()` method multiplies components to give m-at-age
 
 # Modelling uncertainty
 
@@ -40,7 +40,7 @@ Combine this with an assumed distribution, e.g.:
 
 Result is an a4aM object with iterations.
 
-Sample from this to get an FLQuant of m-at-age with iterations.
+Sample from this to get an FLQuant of m-at-age / length with iterations.
 
 
 
