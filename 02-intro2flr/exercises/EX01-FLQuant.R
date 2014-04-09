@@ -41,13 +41,13 @@ fle4 <- flq[-6,]
 
 # (5) What if do not know the precise age names?
 
-fle5 <- flq[-dims(flq)$max, ]
+fle5 <- flq[as.character(dims(flq)$min:(dims(flq)$max-1)),]
 
 #====================================================================
 # COMPUTE
 #====================================================================
 
-flq <- FLQuant(rnorm(200), dimnames=list(age=1:5, year=2000:2013, area=c("N","S","C")))
+flq <- FLQuant(rnorm(60), dimnames=list(age=1:5, year=2000:2003, area=c("N","S","C")))
 
 # How many values in flq are greater than 0?
 
@@ -65,6 +65,16 @@ flq/var(flq)
 #====================================================================
 
 # Compute the proportion-at-age per year
+
+flq <- FLQuant(rlnorm(20), dimnames=list(age=1:5, year=2000:2003))
+
+
+apply(flq, 2, function(x) x/sum(x))
+
+
+
+flq/quantSums(flq)[rep(1,5)]
+
 
 #====================================================================
 # TRANSFORM

@@ -7,13 +7,26 @@
 # create
 #====================================================================
 
+## OPTION 1 - READ CSV/TEXT 
+
+# read.csv
+
 # set basic data structure 
-flqIni <- FLQuant(NA, dimnames=list(age=1:10, year=1980:2010))
+flqIni <- FLQuant(NA, dimnames=list(len=10:100, year=1980:2010))
 
 # create FL*
+stk <- FLStockLen(flqIni)
 stk <- FLStock(flqIni)
+
 idx <- FLIndex(flqIni)
+
 sr <- FLSR(model="bevholt", ssb=quantSums(flqIni)[,-dims(flqIni)$max], rec=flqIni[1,-1])
+
+## OPTION 2 - READ DATA STRUCTURE
+
+stk <- readFLStock("index.txt")
+idx <- read.FLIndices("tunfile.txt")
+
 
 #====================================================================
 # load ple4
@@ -28,11 +41,17 @@ data(ple4)
 plot(ple4)
 summary(ple4)
 
+
+ple4[,"2003"]
+
+
 #====================================================================
 # FLIndex
 #====================================================================
 plot(ple4.index)
 summary(ple4.index)
+
+
 
 #====================================================================
 # FLSR
@@ -44,7 +63,9 @@ plot(ple4.sr)
 #====================================================================
 # FLlst
 #====================================================================
+
 flqs <- FLQuants(catch=catch(ple4), biomass=stock(ple4))
+
 xyplot(data~year, groups=qname, data=flqs, type="l", auto.key=TRUE)
 
 #====================================================================
@@ -55,4 +76,12 @@ xyplot(data~year, groups=qname, data=flqs, type="l", auto.key=TRUE)
 # accessors (same name as the slot), 
 # replacement (same name as the slot but with <-
 # aritmetics *Summs, *Means, *Vars, *Medians, *CV
+
+
+
+
+
+
+
+
 
