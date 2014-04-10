@@ -1,6 +1,21 @@
 #####################################################################
 # SCA
+# Statistical catch-at-age framework for stock assessment
 #####################################################################
+# submodels
+#	fmodel
+#	qmodel
+#	srmodel
+#	vmodel
+#	n1model
+
+# fit types = "MP" or "assessment"
+
+# fit methods simple = "sca" or advanced = "a4aSCA" 
+
+#====================================================================
+# Load
+#====================================================================
 
 library(FLa4a)
 library(diagram)
@@ -11,11 +26,10 @@ source("funs.R")
 #====================================================================
 # Quick and dirty
 #====================================================================
-
+library(FLa4a)
 data(ple4)
 data(ple4.indices)
 fit <- sca(ple4, ple4.indices)
-
 res <- residuals(fit, ple4, ple4.indices)
 plot(res, main="Residuals")
 bubbles(res)
@@ -61,29 +75,25 @@ plotS4("submodel", main="submodel class", lwd = 1, box.lwd = 2, cex.txt = 0.8, b
 #--------------------------------------------------------------------
 
 qmodel <- list(~ factor(age)) 
+
 fmodel <- ~ factor(age) + factor(year)
 fit <- sca(stock = ple4, indices = ple4.indices[1], fmodel=fmodel, qmodel=qmodel)
-
 wireframe(data ~ age + year, data = as.data.frame(harvest(fit)), drape = TRUE, screen = list(x = -90, y=-45))
 
 fmodel <- ~ s(age, k=4) + s(year, k = 20)
 fit1 <- sca(ple4, ple4.indices[1], fmodel, qmodel)
-
 wireframe(data ~ age + year, data = as.data.frame(harvest(fit1)), drape = TRUE, screen = list(x = -90, y=-45))
 
 fmodel <- ~ s(age, k=4) + s(year, k = 20) + te(age, year, k = c(3,3))
 fit2 <- sca(ple4, ple4.indices[1], fmodel, qmodel)
-
 wireframe(data ~ age + year, data = as.data.frame(harvest(fit2)), drape = TRUE, screen = list(x = -90, y=-45))
 
 fmodel <- ~ te(age, year, k = c(4,20))
 fit3 <- sca(ple4, ple4.indices[1], fmodel, qmodel)
-
 wireframe(data ~ age + year, data = as.data.frame(harvest(fit3)), drape = TRUE, screen = list(x = -90, y=-45))
 
 fmodel <- ~ te(age, year, k = c(4,20)) + s(year, k = 5, by = as.numeric(age==1))
 fit4 <- sca(ple4, ple4.indices[1], fmodel, qmodel)
-
 wireframe(data ~ age + year, data = as.data.frame(harvest(fit4)), drape = TRUE, screen = list(x = -90, y=-45))
 
 #--------------------------------------------------------------------
@@ -95,38 +105,34 @@ fmodel <- ~ factor(age) + factor(year)
 
 qmodel <- list(~ factor(age)) 
 fit <- sca(ple4, ple4.indices[1], fmodel, qmodel)
-Z <- m(ple4) + harvest(fit)*sfrac
+Z <- (m(ple4) + harvest(fit))*sfrac # check M * sfrac
 lst <- dimnames(fit@index[[1]])
 lst$x <- stock.n(fit)*exp(-Z)
 stkn <- do.call("trim", lst)
-
 wireframe(data ~ age + year, data = as.data.frame(index(fit)[[1]]/stkn), drape = TRUE, screen = list(x = -90, y=-45))
 
 qmodel <- list(~ s(age, k=4))
 fit1 <- sca(ple4, ple4.indices[1], fmodel, qmodel)
-Z <- m(ple4) + harvest(fit1)*sfrac
+Z <- (m(ple4) + harvest(fit1))*sfrac
 lst <- dimnames(fit1@index[[1]])
 lst$x <- stock.n(fit1)*exp(-Z)
 stkn <- do.call("trim", lst)
-
 wireframe(data ~ age + year, data = as.data.frame(index(fit1)[[1]]/stkn), drape = TRUE, screen = list(x = -90, y=-45))
 
 qmodel <- list(~ te(age, year, k = c(3,40)))
 fit2 <- sca(ple4, ple4.indices[1], fmodel, qmodel)
-Z <- m(ple4) + harvest(fit2)*sfrac
+Z <- (m(ple4) + harvest(fit2))*sfrac
 lst <- dimnames(fit2@index[[1]])
 lst$x <- stock.n(fit2)*exp(-Z)
 stkn <- do.call("trim", lst)
-
 wireframe(data ~ age + year, data = as.data.frame(index(fit2)[[1]]/stkn), drape = TRUE, screen = list(x = -90, y=-45))
 
 qmodel <- list( ~ s(age, k=4) + year)
 fit3 <- sca(ple4, ple4.indices[1], fmodel, qmodel)
-Z <- m(ple4) + harvest(fit3)*sfrac
+Z <- (m(ple4) + harvest(fit3))*sfrac
 lst <- dimnames(fit3@index[[1]])
 lst$x <- stock.n(fit3)*exp(-Z)
 stkn <- do.call("trim", lst)
-
 wireframe(data ~ age + year, data = as.data.frame(index(fit3)[[1]]/stkn), drape = TRUE, screen = list(x = -90, y=-45))
 
 #--------------------------------------------------------------------
@@ -148,7 +154,8 @@ srmodel <- ~ hockey(CV=0.05)
 fit4 <- sca(ple4, ple4.indices[1], fmodel, qmodel, srmodel) 
 srmodel <- ~ geomean(CV=0.05)
 fit5 <- sca(ple4, ple4.indices[1], fmodel, qmodel, srmodel) 
-flqs <- FLQuants(fac=stock.n(fit)[1], smo=stock.n(fit1)[1], ric=stock.n(fit2)[1], bh=stock.n(fit3)[1], hs=stock.n(fit4)[1], gm=stock.n(fit5)[1])
+
+flqs <- FLQuants(fac=stock.n(fit)[1], bh=stock.n(fit3)[1])
 
 xyplot(data~year, groups=qname, data=flqs, type="l", main="Recruitment models", auto.key=list(points=FALSE, lines=TRUE, columns=3))
 
@@ -167,9 +174,9 @@ fit <- a4aSCA(ple4, ple4.indices[1], fmodel, qmodel, srmodel)
 
 n1model <- ~s(age, k=4)
 fit1 <- a4aSCA(ple4, ple4.indices[1], fmodel, qmodel, srmodel, n1model) 
-flqs <- FLQuants(smo=stock.n(fit1)[,1], fac=stock.n(fit)[,1])
+flqs <- FLQuants(smo=stock.n(fit1), fac=stock.n(fit))
 
-xyplot(data~age, groups=qname, data=flqs, type="l", main="N1 models", auto.key=list(points=FALSE, lines=TRUE, columns=2))
+xyplot(data~age|year, groups=qname, data=flqs, type="l", main="N1 models", auto.key=list(points=FALSE, lines=TRUE, columns=2))
 
 #--------------------------------------------------------------------
 # Variance submodel
@@ -183,6 +190,10 @@ flqs <- FLQuants(cts=catch.n(fit), smo=catch.n(fit1))
 
 xyplot(data~year|age, groups=qname, data=flqs, type="l", main="Variance models", scales=list(y=list(relation="free")), auto.key=list(points=FALSE, lines=TRUE, columns=2))
 
+predict(fit)$vmodel$catch
+
+wireframe(data ~ age + year, data = as.data.frame(predict(fit1)$vmodel$catch), drape = TRUE, screen = list(x = -90, y=-45))
+
 #--------------------------------------------------------------------
 # Working with covariates
 #--------------------------------------------------------------------
@@ -193,6 +204,8 @@ nao <- FLQuant(unlist(nao[,-1]), dimnames=dnms, units="nao")
 nao <- seasonMeans(trim(nao, year=dimnames(stock.n(ple4))$year))
 nao <- as.numeric(nao)
 
+# force covars to be passed through covar argument
+
 srmodel <- ~ nao
 fit2 <- a4aSCA(ple4, ple4.indices[1], fmodel, qmodel, srmodel) 
 flqs <- FLQuants(fac=stock.n(fit)[1], cvar=stock.n(fit2)[1])
@@ -202,6 +215,9 @@ xyplot(data~year, groups=qname, data=flqs, type="l", main="Recruitment model wit
 srmodel <- ~ ricker(a=~nao, CV=0.1)
 fit3 <- a4aSCA(ple4, ple4.indices[1], fmodel, qmodel, srmodel) 
 flqs <- FLQuants(fac=stock.n(fit)[1], cvar=stock.n(fit3)[1])
+
+xyplot(data~year, groups=qname, data=flqs, type="l", main="Recruitment model with covariates")
+
 
 #--------------------------------------------------------------------
 # External weigthing of likelihood components
@@ -257,9 +273,15 @@ xyplot(data~year|age, groups=qname, data=flqs, type="l", main="Median simulation
 stks <- ple4 + fits
 plot(stks)
 
+#--------------------------------------------------------------------
+# WKSAM exercise
+#--------------------------------------------------------------------
+fits <- simulate(fit, 25)
+stk <- ple4 + fits
 
-
-
+fits2 <- a4aSCA(stk, ple4.indices[1], fmodel, qmodel, srmodel, fit="MP")  
+flqs <- FLQuants(fit=stock.n(fit), repl=iterMedians(stock.n(fits2)))
+xyplot(data~year|age, groups=qname, data=flqs, type="l", scales=list(y=list(relation="free")))
 
 
 #fmodel <- ~ s(age, k=4) + s(year, k = 20)
