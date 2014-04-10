@@ -349,48 +349,6 @@ flqs <- FLQuants(cts=catch.n(fit), smo=catch.n(fit1))
 xyplot(data~year|age, groups=qname, data=flqs, type="l", main="Variance models", scales=list(y=list(relation="free")), auto.key=list(points=FALSE, lines=TRUE, columns=2))
 @
 
-\subsubsection{Working with covariates}
-
-<<>>=
-nao <- read.table("http://www.cdc.noaa.gov/data/correlation/nao.data", skip=1, nrow=62, na.strings="-99.90")
-dnms <- list(quant="nao", year=1948:2009, unit="unique", season=1:12, area="unique")
-nao <- FLQuant(unlist(nao[,-1]), dimnames=dnms, units="nao")
-nao <- seasonMeans(trim(nao, year=dimnames(stock.n(ple4))$year))
-nao <- as.numeric(nao)
-@
-
-<<>>=
-srmodel <- ~ nao
-fit2 <- a4aSCA(ple4, ple4.indices[1], fmodel, qmodel, srmodel) 
-flqs <- FLQuants(fac=stock.n(fit)[1], cvar=stock.n(fit2)[1])
-@
-
-<<figure=TRUE>>=
-xyplot(data~year, groups=qname, data=flqs, type="l", main="Recruitment model with covariates")
-@
-
-<<figure=TRUE>>=
-srmodel <- ~ ricker(a=~nao, CV=0.1)
-fit3 <- a4aSCA(ple4, ple4.indices[1], fmodel, qmodel, srmodel) 
-flqs <- FLQuants(fac=stock.n(fit)[1], cvar=stock.n(fit3)[1])
-@
-
-<<>>=
-#fmodel <- ~ s(age, k=4) + s(year, k = 20)
-#qmodel <- list( ~ s(age, k=4) + year)
-#srmodel <- ~s(year, k=20)
-#fit <- a4aSCA(ple4, ple4.indices[1], fmodel, qmodel, srmodel) 
-#fits <- simulate(fit, 25)
-#stks <- ple4 + fits 
-#idxs <- ple4.indices[1]
-#index(idxs[[1]]) <- index(fits)[[1]]
-#library(parallel)
-#options(mc.cores=1)
-#lst <- mclapply(split(1:25, 1:25), function(x){
-#	fit <- a4aSCA(stks[,,,,,x], FLIndices(idxs[[1]][,,,,,x]), fmodel, qmodel, srmodel, fit="MP") 
-#})
-@
-
 \subsubsection{External weigthing of likelihood components}
 
 By default the likelihood components are weighted using inverse variance of the parameters estimates. However the user may change this weights by setting the variance of the input parameters, which is done by adding a variance matrix to the catch.n and index.n slots of the stock and index objects. 
@@ -455,6 +413,109 @@ stks <- ple4 + fits
 plot(stks)
 @
 
+\subsubsection{Working with covariates}
+
+<<>>=
+nao <- read.table("http://www.cdc.noaa.gov/data/correlation/nao.data", skip=1, nrow=62, na.strings="-99.90")
+dnms <- list(quant="nao", year=1948:2009, unit="unique", season=1:12, area="unique")
+nao <- FLQuant(unlist(nao[,-1]), dimnames=dnms, units="nao")
+nao <- seasonMeans(trim(nao, year=dimnames(stock.n(ple4))$year))
+nao <- as.numeric(nao)
+@
+
+<<>>=
+srmodel <- ~ nao
+fit2 <- a4aSCA(ple4, ple4.indices[1], fmodel, qmodel, srmodel) 
+flqs <- FLQuants(fac=stock.n(fit)[1], cvar=stock.n(fit2)[1])
+@
+
+<<figure=TRUE>>=
+xyplot(data~year, groups=qname, data=flqs, type="l", main="Recruitment model with covariates")
+@
+
+<<figure=TRUE>>=
+srmodel <- ~ ricker(a=~nao, CV=0.1)
+fit3 <- a4aSCA(ple4, ple4.indices[1], fmodel, qmodel, srmodel) 
+flqs <- FLQuants(fac=stock.n(fit)[1], cvar=stock.n(fit3)[1])
+@
+
+<<figure=TRUE>>=
+xyplot(data~year, groups=qname, data=flqs, type="l", main="Recruitment model with covariates")
+@
+
+<<>>=
+srmodel <- ~s(year, k=20)
+qmodel <- list(~ factor(age) + nao)
+fit4 <- a4aSCA(ple4, ple4.indices[1], fmodel, qmodel, srmodel, covar=list(nao=nao)) 
+flqs <- FLQuants(smo=stock.n(fit), cvar=stock.n(fit4))
+@
+
+<<figure=TRUE>>=
+xyplot(data~year|age, groups=qname, data=flqs, type="l", main="Catchability model with covariates", scales=list(y=list(relation="free")))
+@
+
+<<>>=
+Z <- m(ple4) + harvest(fit4)*sfrac
+lst <- dimnames(fit@index[[1]])
+lst$x <- stock.n(fit4)*exp(-Z)
+stkn <- do.call("trim", lst)
+@
+
+<<figure=TRUE>>=
+wireframe(data ~ age + year, data = as.data.frame(index(fit4)[[1]]/stkn), drape = TRUE, screen = list(x = -90, y=-45))
+@
+
+\subsection{Geeky stuff}
+
+<<>>=
+fmodel <- ~ s(age, k=4) + s(year, k = 20)
+qmodel <- list( ~ s(age, k=4) + year)
+srmodel <- ~s(year, k=20)
+fit <- a4aSCA(ple4, ple4.indices[1], fmodel, qmodel, srmodel) 
+@
+
+\subsubsection{WCSAM exercise - replicating itself}
+
+<<>>=
+fits <- simulate(fit, 25)
+stks <- ple4 + fits
+fit1 <- a4aSCA(stks, idxs, fmodel, qmodel, srmodel, fit="MP") 
+@
+
+<<figure=TRUE>>=
+plot(FLStocks(sim=ple4 + fit1, orig=ple4+fit))
+@
+
+\subsubsection{Likelihood profiling - ToDo}
+
+<<>>=
+#ks <- seq(10,50,5)
+#qmodel <- list( ~ s(age, k=4) + year)
+#srmodel <- ~s(year, k=20)
+#liks <- liks <- data.frame(k=ks, nlogl=NA)
+#for(i in ks){
+#	fmodel <- as.formula(substitute(~s(age, k=4) + s(year, k=x), list(x=i)))
+#	liks[liks$k==i,2] <- as.numeric(BIC(a4aSCA(ple4, ple4.indices[1], fmodel, qmodel, srmodel)))
+#}
+@
+
+\subsubsection{Paralell computing (not working yet ...)}
+
+<<>>=
+#fmodel <- ~ s(age, k=4) + s(year, k = 20)
+#qmodel <- list( ~ s(age, k=4) + year)
+#srmodel <- ~s(year, k=20)
+#fit <- a4aSCA(ple4, ple4.indices[1], fmodel, qmodel, srmodel) 
+#fits <- simulate(fit, 25)
+#stks <- ple4 + fits 
+#idxs <- ple4.indices[1]
+#index(idxs[[1]]) <- index(fits)[[1]]
+#library(parallel)
+#options(mc.cores=1)
+#lst <- mclapply(split(1:25, 1:25), function(x){
+#	fit <- a4aSCA(stks[,,,,,x], FLIndices(idxs[[1]][,,,,,x]), fmodel, qmodel, srmodel, fit="MP") 
+#})
+@
 
 \end{document}
 
