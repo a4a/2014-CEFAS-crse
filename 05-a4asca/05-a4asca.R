@@ -26,11 +26,10 @@ source("funs.R")
 #====================================================================
 # Quick and dirty
 #====================================================================
-
+library(FLa4a)
 data(ple4)
 data(ple4.indices)
 fit <- sca(ple4, ple4.indices)
-
 res <- residuals(fit, ple4, ple4.indices)
 plot(res, main="Residuals")
 bubbles(res)
@@ -175,9 +174,9 @@ fit <- a4aSCA(ple4, ple4.indices[1], fmodel, qmodel, srmodel)
 
 n1model <- ~s(age, k=4)
 fit1 <- a4aSCA(ple4, ple4.indices[1], fmodel, qmodel, srmodel, n1model) 
-flqs <- FLQuants(smo=stock.n(fit1)[,1], fac=stock.n(fit)[,1])
+flqs <- FLQuants(smo=stock.n(fit1), fac=stock.n(fit))
 
-xyplot(data~age, groups=qname, data=flqs, type="l", main="N1 models", auto.key=list(points=FALSE, lines=TRUE, columns=2))
+xyplot(data~age|year, groups=qname, data=flqs, type="l", main="N1 models", auto.key=list(points=FALSE, lines=TRUE, columns=2))
 
 #--------------------------------------------------------------------
 # Variance submodel
@@ -191,6 +190,10 @@ flqs <- FLQuants(cts=catch.n(fit), smo=catch.n(fit1))
 
 xyplot(data~year|age, groups=qname, data=flqs, type="l", main="Variance models", scales=list(y=list(relation="free")), auto.key=list(points=FALSE, lines=TRUE, columns=2))
 
+predict(fit)$vmodel$catch
+
+wireframe(data ~ age + year, data = as.data.frame(predict(fit1)$vmodel$catch), drape = TRUE, screen = list(x = -90, y=-45))
+
 #--------------------------------------------------------------------
 # Working with covariates
 #--------------------------------------------------------------------
@@ -201,6 +204,8 @@ nao <- FLQuant(unlist(nao[,-1]), dimnames=dnms, units="nao")
 nao <- seasonMeans(trim(nao, year=dimnames(stock.n(ple4))$year))
 nao <- as.numeric(nao)
 
+# force covars to be passed through covar argument
+
 srmodel <- ~ nao
 fit2 <- a4aSCA(ple4, ple4.indices[1], fmodel, qmodel, srmodel) 
 flqs <- FLQuants(fac=stock.n(fit)[1], cvar=stock.n(fit2)[1])
@@ -210,6 +215,9 @@ xyplot(data~year, groups=qname, data=flqs, type="l", main="Recruitment model wit
 srmodel <- ~ ricker(a=~nao, CV=0.1)
 fit3 <- a4aSCA(ple4, ple4.indices[1], fmodel, qmodel, srmodel) 
 flqs <- FLQuants(fac=stock.n(fit)[1], cvar=stock.n(fit3)[1])
+
+xyplot(data~year, groups=qname, data=flqs, type="l", main="Recruitment model with covariates")
+
 
 #--------------------------------------------------------------------
 # External weigthing of likelihood components
@@ -265,9 +273,15 @@ xyplot(data~year|age, groups=qname, data=flqs, type="l", main="Median simulation
 stks <- ple4 + fits
 plot(stks)
 
+#--------------------------------------------------------------------
+# WKSAM exercise
+#--------------------------------------------------------------------
+fits <- simulate(fit, 25)
+stk <- ple4 + fits
 
-
-
+fits2 <- a4aSCA(stk, ple4.indices[1], fmodel, qmodel, srmodel, fit="MP")  
+flqs <- FLQuants(fit=stock.n(fit), repl=iterMedians(stock.n(fits2)))
+xyplot(data~year|age, groups=qname, data=flqs, type="l", scales=list(y=list(relation="free")))
 
 
 #fmodel <- ~ s(age, k=4) + s(year, k = 20)
