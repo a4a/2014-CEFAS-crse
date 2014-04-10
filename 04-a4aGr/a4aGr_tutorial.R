@@ -6,6 +6,8 @@
 # Preliminaries
 #-------------------------------------------------------
 
+install.packages("FLa4a", repos="http://flr-project.org/R")
+
 # Load the FLa4a library
 library(FLa4a)
 
@@ -15,20 +17,24 @@ library(FLa4a)
 
 showClass("a4aGr")
 
-# We're going to focus on the grMod, grInvMod and params slots to start with
+# We're going to focus on the grMod, grInvMod
+# and params slots to start with
 
-# grMod and grInvMod are forumla for t~len and len~t
+# grMod and grInvMod are formulae for t~len and len~t
 vb <- ~linf*(1-exp(-k*(t-t0)))
 inverse_vb <- ~t0-1/k*log(1-len/linf)
 # What are they?
 class(vb)
 
-# We also create some parameters (matching those in the formulae, other than len and t)
+# We also create some parameters (matching those
+# in the formulae, other than len and t)
 # We set some units too (not essential)
-vb_params <- FLPar(linf=58.5, k=0.086, t0=0.001, units=c("cm","ano-1","ano"))
+vb_params <- FLPar(linf=58.5, k=0.086, t0=0.001,
+                   units=c("cm","ano-1","ano"))
 
 # Make the a4aGr object
-vb_gr <- a4aGr(grMod=vb, grInvMod=inverse_vb, params=vb_params)
+vb_gr <- a4aGr(grMod=vb, grInvMod=inverse_vb,
+               params=vb_params)
 
 # What did we make?
 vb_gr
@@ -39,7 +45,8 @@ params(vb_gr)
 # Note only 1 iteration in the params - no uncertainty (yet...)
 dim(params(vb_gr))
 
-# What can we do with this object? Convert length-to-ages and ages-to-lengths
+# What can we do with this object?
+# Convert length-to-ages and ages-to-lengths
 # Works with a single value
 predict(vb_gr, len=20) #  note that the argument has the same name as the parameter in the growth model
 predict(vb_gr, t=5) # Using the inverse model
@@ -48,11 +55,12 @@ predict(vb_gr, t=predict(vb_gr, len=20)) # model into the inverse model (sanity 
 # Also works with vectors of lengths or ages
 predict(vb_gr, len=5:10+0.5)
 predict(vb_gr, t=5:10+0.5)
-
+predict(vb_gr, t=predict(vb_gr, len=5:10+0.5))
 
 # So far, so good
-# The mode is deterministic with no uncertainty.
-# Now we start to get a little mode complicated and add parameter uncertainty
+# The model is deterministic with no uncertainty.
+# Now we start to get a little mode complicated
+# and add parameter uncertainty
 
 #-------------------------------------------------------
 # Adding multivariate normal parameter uncertainty
@@ -67,12 +75,14 @@ varcov <- matrix(NA, ncol=3, nrow=3)
 diag(varcov) <- c(100, 0.001,0.001)
 varcov[upper.tri(varcov)] <- varcov[lower.tri(varcov)] <- c(0.1,0.1,0.0003)
 varcov
-# Note that the order of the matrix should match that in the params slot of the a4aGr object
+# Note that the order of columns and rows in the matrix
+# should match that in the params slot of the a4aGr object
 # i.e. here the order is linf, k, t0
 
 # Create the a4aGr object as before but now we also include the variance-covariance matrix
 # Make the a4aGr object
-vb_gr <- a4aGr(grMod=vb, grInvMod=inverse_vb, params=vb_params, vcov=varcov)
+vb_gr <- a4aGr(grMod=vb, grInvMod=inverse_vb,
+               params=vb_params, vcov=varcov)
 vb_gr
 
 # Note that we still only have 1 iteration of the parameters
@@ -83,7 +93,7 @@ dim(params(vb_gr))
 vb_norm <- mvrnorm(10000,vb_gr)
 class(vb_norm)
 
-# Now we have 1000 iterations of each parameter, randomly sampled from the multivariate normal distribution
+# Now we have 10000 iterations of each parameter, randomly sampled from the multivariate normal distribution
 params(vb_norm) # note the brackets indicating iterations
 dim(params(vb_norm))
 
@@ -97,7 +107,7 @@ hist(c(params(vb_norm)["t0",]), main="t0", xlab="")
 splom(data.frame(t(params(vb_norm)@.Data)), pch='.')
 
 # We can now convert from length to ages data based on the parameter iterations.
-predict(vb_norm, len = 20)
+ages <- predict(vb_norm, len = 20)
 # We get one value of t (age) for every parameter iteration at for length = 20
 # It also works for vectors of length (or age)
 ages <- predict(vb_norm, len=(5:10)+0.5)
@@ -109,7 +119,7 @@ ages[,1:5]
 # We can plot the growth curve by passing a vector of ages and plotting the simulated lengths
 boxplot(t(predict(vb_norm, t=0:50+0.5)))
 
-# Some of the growth curves may be a little weird because of the random parameters
+# Some of the growth curves may be a little weird because of the normally distributed random parameters
 # This is because we are using a multivariate normal, i.e. theoretically there are no bounds on the parameter values
 # Let's try a different distribution
 
@@ -117,11 +127,14 @@ boxplot(t(predict(vb_norm, t=0:50+0.5)))
 # Adding multivariate triangular parameter uncertainty
 #-------------------------------------------------------
 
-# For a triangular distribution we need to set a minimum and maximum and (optionally) a median value of the parameters
+# For a triangular distribution we need to set a
+# minimum and maximum and (optionally) a median
+# value of the parameters
 # Here we scrape the data from FishBase
 
 addr <- "http://www.fishbase.org/PopDyn/PopGrowthList.php?ID=501"
-# Scrape the data
+# Scrape the data - you will need to install the package XML if you don't yet have it
+install.packages("XML")
 library(XML)
 tab <- try(readHTMLTable(addr))
 # What did we get?
@@ -162,17 +175,22 @@ boxplot(t(predict(vb_tri, t=0:50+0.5)))
 
 # No weird results as the parameters have bounds
 
+boxplot(t(predict(vb_tri, len=20)))
+
+
 #-------------------------------------------------------
 # Adding uncertainty with other copulas
 #-------------------------------------------------------
 
 # The mvrtriangle() function makes use of copulas
-# Sklar's Theorem states that any multivariate joint distribution can be written in terms of univariate marginal distribution functions
+# Sklar's Theorem states that any multivariate joint distribution
+# can be written in terms of univariate marginal distribution functions
 # and a copula which describes the dependence structure between the variables. 
+# http://en.wikipedia.org/wiki/Copula_(probability_theory)
 
 # A more general approach to adding parameter uncertainty is to make use of whatever copula and marginal distribution you want.
 # This is possible with mvrcop() the function (in the FLa4a package).
-# This is essentially to the rMvdc() method and the copula methods (e.g. archmCopula()) in the copula package.
+# This is essentially a wrapper to the rMvdc() method and the copula methods (e.g. archmCopula()) in the copula package.
 # The example below keeps the same parameters and changes only the copula type and family but a lot more can be done.
 # For more detauls see the package 'copula'.
 
@@ -204,12 +222,14 @@ boxplot(t(predict(vb_cop, t=0:20+0.5)))
 
 # We need some data so we load some that we prepared earlier
 # It's Red Fish (actually output data from a Gadget model)
+setwd("C://Users//scottfi//Documents//GitHub//2014-CEFAS-crse//04-a4aGr")
 load("data/rfLen.rdata")
 # This data includes an object of type FLStockLen
 summary(rfLen.stk)
 
 # Slicing an FLQuant
-# We take the catch numbers from the FLStockLen object and slice them
+# We take the catch numbers from the FLStockLen object
+# and slice them
 dim(catch.n(rfLen.stk))
 # Note that it has seasons
 # show a bit of it
@@ -233,7 +253,8 @@ dimnames(cage)
 cage[,1,,1,]
 # To make the object more manageable (and the l2a() method faster) you can set a maximum age.
 # Any observations equal to or older than this age, get grouped together.
-cage20 <- l2a(catch.n(rfLen.stk), vb_small_tri, stat="sum", max_age=20)
+cage20 <- l2a(catch.n(rfLen.stk), vb_small_tri,
+              stat="sum", max_age=20)
 dim(cage20)
 # We have as many iterations as there were in the growth model
 # and the first dimension is now age
