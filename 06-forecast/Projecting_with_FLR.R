@@ -10,6 +10,10 @@
 #---------------------------------------------------------------
 # Basics
 #---------------------------------------------------------------
+install.packages("FLCore", repos="http://flr-project.org/R")
+
+install.packages("FLAssess", repos="http://flr-project.org/R")
+# Should also install FLash
 
 # Load the libraries
 library(FLCore)
@@ -23,14 +27,18 @@ data(ple4)
 # Introduction to projections
 #---------------------------------------------------------------
 
-# Making projections is like making a cake - just need the right ingredients and put them together in the right order
-# It doesn't have to be difficult and with a small amount of effort it's possible to make something simple but tasty
+# Making projections is like making a cake - just need the right ingredients and
+# put them together in the right order.
+# It doesn't have to be difficult and with a small amount of effort it's
+# possible to make something simple but tasty.
 # With more skill, you can make something more complicated and (maybe) tastier
-# But there is a risk - the more complicated you make it, the higher the chance of making a terrible cake
+# But there is a risk - the more complicated you make it,
+# the higher the chance of making a terrible cake
 # http://www.cakewrecks.com/
 
 # There are three necessary ingredients when projecting in FLR
-#     stock object - that you will forecast and about which you have made some assumptions about what will happen in the future
+#     stock object - that you will forecast and about which you have
+#            made some assumptions about what will happen in the future
 #     a stock-recruitment relationship
 #     projection control - specify what targets and when to hit them
 
@@ -53,7 +61,8 @@ summary(ple4)
 # This has several options that allow you to control the assumptions about the future
 ?stf
 # These assumptions specify how many years you want to average over to set future values
-# For example, wts.nyears is the number of years over which to calculate the *.wt, *.spwn, mat and m slots
+# For example, wts.nyears is the number of years over which to
+# calculate the *.wt, *.spwn, mat and m slots
 # By default this is 3 years
 # We'll keep it simple and use the default
 
@@ -166,7 +175,9 @@ plot(window(ple4_fwd_catch, start = 1991, end = 2011))
 ssb(ple4_stf)
 # We want the future SSB to be high (we could have used FLBRP to come up with a suitable value, e.g. Bmsy but here we just pick a value)
 future_ssb <- 300000
-ctrl_ssb <- fwdControl(data.frame(year=2009:2011, quantity = "ssb", val=future_ssb))
+ctrl_ssb <- fwdControl(data.frame(year=2009:2011,
+                                  quantity = "ssb",
+                                  val=future_ssb))
 ctrl_ssb
 ple4_fwd_ssb <- fwd(ple4_stf, ctrl_ssb, sr = ple4_sr)
 # Error - what happened - Cake Failure! www.cakewrecks.com
@@ -182,11 +193,11 @@ ple4_fwd_ssb <- fwd(ple4_stf, ctrl_ssb, sr = ple4_sr)
 ctrl_ssb <- fwdControl(data.frame(year=2008:2010, quantity = "ssb", val=future_ssb))
 ctrl_ssb
 ple4_fwd_ssb <- fwd(ple4_stf, ctrl_ssb, sr = ple4_sr)
+# We've hit our SSB target straight away
 ssb(ple4_fwd_ssb)
 # But this has required a large decrease in F and Catch in 2008
 fbar(ple4_fwd_ssb)
 catch(ple4_fwd_ssb)
-# We've hit our SSB target straight away
 plot(window(ple4_fwd_ssb, start = 1991, end = 2011))
 
 # Importante!
@@ -194,7 +205,7 @@ plot(window(ple4_fwd_ssb, start = 1991, end = 2011))
 # This means that F in 2011 is just left over from stf() and has nothing to do with our projection
 # And because our target is SSB in 2011, catch is not calculated for 2011
 # This is why catch is 0 in 2011
-# You can ignore catcb and F in 2011 
+# You can ignore catch and F in 2011 
 # Or just plot until 2010
 plot(window(ple4_fwd_ssb, start = 1991, end = 2010))
 
@@ -223,7 +234,7 @@ ple4_fwd_rel_catch <- fwd(ple4_stf, ctrl_rel_catch, sr = ple4_sr)
 catch(ple4_fwd_rel_catch)
 plot(window(ple4_fwd_rel_catch, start = 1991, end = 2011))
 
-# This is the same result as Recipe 3, but in Recipe 3 we had to set the absolute catch values in advance
+# This is the same result as Recipe 2, but in Recipe 2 we had to set the absolute catch values in advance
 
 #---------------------------------------------------------------
 # Recipe 5 - Clootie Dumpling
@@ -235,7 +246,7 @@ plot(window(ple4_fwd_rel_catch, start = 1991, end = 2011))
 # Multiple targets
 # Targets with BOUNDS
 
-# We saw in Recipe 3 (SSB target) that we can hit our high SSB target but this causes a decline in catch in 2008
+# We saw in Recipe 3 (SSB target) that we can hit our high SSB target in 2009 but this causes a big decline in catch in 2008
 # Fishers will not like this
 # So we can set a MINIMUM value to the catch. 
 # This means that fwd() will try to find the F that will result in our target SSB, but will be constrained by catch having a minimum value.
@@ -318,7 +329,8 @@ plot(window(recovery, start = 1991, end = 2014))
 # There are two main ways of introducing iterations into fwd():
 	# 1. By passing in residuals to the stock-recruitment function (as another argument to fwd())
 	# 2. Through the control object (by setting target values as multiple values)
-# You can actually use both of these methods at the same time.
+  # 3. Throught the iterations in the stock object (e.g. from a4a)
+# You can actually use all of these methods at the same time.
 # As you can probably imagine, this can quickly become very complicated
 # so we'll just do some simple examples
 
@@ -372,15 +384,17 @@ sample_years <- sample(dimnames(residuals(ple4_sr))$year, niters * 3, replace = 
 multi_rec_residuals[] <- exp(residuals(ple4_sr)[,sample_years])
 # What have we got?
 multi_rec_residuals
-# What do those brackets mean?
-# It's a way of summarising the iterations - we have 100 iterations but don't want to see all of them - just a summary
 
-# We now have the recruitment residiuals
+# We now have the recruitment residuals
 # We still need a control object
-# We'll use one we made earlier with decreasing catch  (remember...?)
+# We'll use one we made earlier with decreasing catch  (remember the Welsh cake?)
 ctrl_catch
 
-ple4_fwd_catch_rec <- fwd(ple4_stf_iters, ctrl = ctrl_catch, sr = ple4_sr, sr.residuals = multi_rec_residuals, sr.residuals.mult = TRUE)
+ple4_fwd_catch_rec <- fwd(ple4_stf_iters,
+                          ctrl = ctrl_catch,
+                          sr = ple4_sr,
+                          sr.residuals = multi_rec_residuals,
+                          sr.residuals.mult = TRUE)
 # What just happened?
 rec(ple4_fwd_catch_rec)
 fbar(ple4_fwd_catch_rec)
@@ -477,7 +491,6 @@ bmsy <- 300000
 max_change_tac = 0.15
 
 niters <- 1000
-# We'll use the three year projection as before
 ple4_stf <- stf(ple4, nyears = length(proj_years))
 ple4_stf_iters <- propagate(ple4_stf, niters)
 
