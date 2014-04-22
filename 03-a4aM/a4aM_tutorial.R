@@ -17,7 +17,7 @@ showClass("a4aM")
 
 # 3 models:
 # shape - age effect
-# level - year effect
+# level
 # trend - time trend
 # These models are of type FLModelSim
 # We need to supply model (formula) and parameters (FLPar)
@@ -42,7 +42,7 @@ shape(m1)
 trend(m1)
 
 # We use the m method to create an FLQuant of m
-# At the moment we have dimensions specified
+# At the moment we no have dimensions specified
 range(m1)
 # Note the use of minmbar - we'll come to this
 
@@ -72,6 +72,7 @@ level2
 
 # And we use an exponential decay model for the shape model
 shape2 <- FLModelSim(model=~exp(-age-0.5))
+shape2 <- FLModelSim(model=~exp(-len-0.5))
 shape2
 # Note that the model is a function of age
 
@@ -145,29 +146,39 @@ m(m3, nao = window(nao,2000,2005))
 # We also include a variance-covariance matrix for the parameter interaction
 level4 <- FLModelSim(model=~k^0.66*t^0.57,
                      params = FLPar(k=0.4, t=10),
-                     vcov=matrix(c(0.002, 0.01,0.01, 1), ncol=2))
+                     vcov=matrix(c(0.002, 0.01,0.01, 1),
+                                 ncol=2))
 
 
 # For trend we use NAO trend but also include variance
-trend4 <- FLModelSim(model=~1+b*nao, params=FLPar(b=0.5), vcov=matrix(0.02))
-m4 <- a4aM(shape=shape2, level=level4, trend=trend4)
+#trend4 <- FLModelSim(model=~1+b*nao, params=FLPar(b=0.5), vcov=matrix(0.02))
+#m4 <- a4aM(shape=shape2, level=level4, trend=trend4)
+m4 <- a4aM(shape=shape2, level=level4)
+
 m4
 # Check the number of iterations in the parameters for the level and trend models
 params(level(m4))
-params(trend(m4))
+#params(trend(m4))
 # Use mbrnorm to sample from the models
 m4 <- mvrnorm(1000, m4)
 m4
 params(level(m4))
-params(trend(m4))
+#params(trend(m4))
 # Now we have iterations
 
 rngage(m4) <- c(0,5)
 rngyear(m4) <- c(2000,2005)
 # Pass in the nao with the required year range
-m4flq <- m(m4, nao = window(nao,2000,2005))
+#m4flq <- m(m4, nao = window(nao,2000,2005))
+m4flq <- m(m4)
 dim(m4flq)
-plot(m4flq)
+bwplot(data ~ quant | year, data=m4flq)
+
+#----------------------------------------
+data(ple4)
+# ignore trend for the time being
+# shape
+# level
 
 
 
